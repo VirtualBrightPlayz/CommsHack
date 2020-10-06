@@ -57,24 +57,26 @@ namespace CommsHack
                 comms._capture.RestartTransmissionPipeline("Dummy");
                 HackMain.clientInfo = cooms.Server._clients.GetOrCreateClientInfo(9999, "Dummy", new CodecSettings(Dissonance.Audio.Codecs.Codec.Opus, 48000, 960), new MirrorConn(NetworkServer.localConnection));
                 var clientInfo = HackMain.clientInfo;
-                if (!(sender is PlayerCommandSender))
-                {
-                    cooms.Server._clients.JoinRoom("Ghost", clientInfo);
-                    cooms.Server._clients.JoinRoom("SCP", clientInfo);
+                /*if (!(sender is PlayerCommandSender))
+                {*/
+                    //cooms.Server._clients.JoinRoom("Ghost", clientInfo);
+                    //cooms.Server._clients.JoinRoom("SCP", clientInfo);
                     cooms.Server._clients.JoinRoom("Null", clientInfo);
-                    comms.RoomChannels.Open("Ghost", false, ChannelPriority.High, 1f);
-                    comms.RoomChannels.Open("SCP", false, ChannelPriority.High, 1f);
+                    cooms.Server._clients.JoinRoom("Intercom", clientInfo);
+                    //comms.RoomChannels.Open("Ghost", false, ChannelPriority.High, 1f);
+                    //comms.RoomChannels.Open("SCP", false, ChannelPriority.High, 1f);
                     comms.RoomChannels.Open("Null", false, ChannelPriority.High, 1f);
-                }
+                    comms.RoomChannels.Open("Intercom", false, ChannelPriority.High, 1f);
+                /*}*/
                 response = "Playing";
-                if (sender is PlayerCommandSender)
+                /*if (sender is PlayerCommandSender)
                 {
                     cooms.Server._clients.JoinRoom("Proximity", clientInfo);
                     cooms.Server._clients.JoinRoom("Null", clientInfo);
                     comms.RoomChannels.Open("Proximity", true, ChannelPriority.High, 1f);
                     comms.RoomChannels.Open("Null", true, ChannelPriority.High, 1f);
                     var plr = sender as PlayerCommandSender;
-                    GameObject go = GameObject.Instantiate(NetworkManager.singleton.playerPrefab/*NetworkManager.singleton.spawnPrefabs.FirstOrDefault(p => p.gameObject.name == "Player")*/);
+                    GameObject go = GameObject.Instantiate(NetworkManager.singleton.playerPrefab);
                     go.transform.position = plr.CCM.transform.position;
                     go.GetComponent<CharacterClassManager>().CurClass = RoleType.Tutorial;
                     go.GetComponent<CharacterClassManager>().GodMode = true;
@@ -86,10 +88,10 @@ namespace CommsHack
                     //GameObject.Destroy(go.GetComponent<CustomBroadcastTrigger>());
                     go.AddComponent<CustomBroadcastTrigger>().Mode = CommActivationMode.VoiceActivation;
                     //go.GetComponent<DissonanceUserSetup>().enabled = false;
-                    NetworkServer.Spawn(go);
+                    NetworkServer.SpawnWithClientAuthority(go, NetworkServer.localConnection);
                     Timing.RunCoroutine(SpawnLate(go, plr));
                     response += "3d";
-                }
+                }*/
                 foreach (var plr in Player.List)
                 {
                     cooms.Server._clients.SendFakeClientState(new MirrorConn(plr.Connection), clientInfo);

@@ -94,15 +94,10 @@ namespace CommsHack
                 comms._capture.RestartTransmissionPipeline("Dummy");
                 client.Connect();
                 clientInfo = cooms.Server._clients.GetOrCreateClientInfo(9999, "Dummy", new CodecSettings(Dissonance.Audio.Codecs.Codec.Opus, 48000, 960), new MirrorConn(NetworkServer.localConnection));
-                clientInfo.AddRoom("Ghost");
-                clientInfo.AddRoom("SCP");
-                clientInfo.AddRoom("Null");
-                cooms.Server._clients.JoinRoom("Ghost", clientInfo);
-                cooms.Server._clients.JoinRoom("SCP", clientInfo);
                 cooms.Server._clients.JoinRoom("Null", clientInfo);
-                new RoomChannel?(comms.RoomChannels.Open("Ghost", false, ChannelPriority.High, 1f));
-                new RoomChannel?(comms.RoomChannels.Open("SCP", false, ChannelPriority.High, 1f));
-                new RoomChannel?(comms.RoomChannels.Open("Null", false, ChannelPriority.High, 1f));
+                cooms.Server._clients.JoinRoom("Intercom", clientInfo);
+                comms.RoomChannels.Open("Null", false, ChannelPriority.High, 1f);
+                comms.RoomChannels.Open("Intercom", false, ChannelPriority.High, 1f);
                 cooms.Server._clients.SendFakeClientState(new MirrorConn(ev.Player.Connection), clientInfo);
                 comms.IsMuted = false;
                 //new RoomChannel?(comms.RoomChannels.Open("Ghost"));

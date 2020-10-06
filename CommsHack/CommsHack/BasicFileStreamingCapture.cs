@@ -26,6 +26,13 @@ namespace CommsHack
 
         public WaveFormat StartCapture(string name)
         {
+            if (!File.Exists(name))
+            {
+                _file = null;
+                IsRecording = false;
+                Latency = TimeSpan.FromMilliseconds(0);
+                return _format;
+            }
             _file = File.OpenRead(name);
 
             IsRecording = true;
@@ -56,7 +63,7 @@ namespace CommsHack
         {
             _elapsedTime += Time.unscaledDeltaTime;
 
-            while (_elapsedTime > 0.02f)
+            while (_elapsedTime > 0.02f && _file != null)
             {
                 _elapsedTime -= 0.02f;
 
