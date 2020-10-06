@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using System.Linq;
 using Dissonance.Networking.Client;
+using HarmonyLib;
 
 namespace CommsHack
 {
@@ -29,12 +30,15 @@ namespace CommsHack
         public static ClientInfo<MirrorConn> clientInfo;
         public static CoroutineHandle handle;
         public static HackMain main;
+        public static Harmony inst;
 
         public override void OnDisabled()
         {
             base.OnDisabled();
             Exiled.Events.Handlers.Player.Joined -= Events_PlayerJoinEvent;
             Timing.KillCoroutines(handle);
+            inst.UnpatchAll();
+            inst = null;
             main = null;
         }
 
@@ -44,6 +48,8 @@ namespace CommsHack
             Exiled.Events.Handlers.Player.Joined += Events_PlayerJoinEvent;
             handle = Timing.RunCoroutine(UpdateClient());
             main = this;
+            inst = new Harmony("virtualbrightplayz.commhack.scpsl");
+            inst.PatchAll();
         }
 
         public IEnumerator<float> UpdateClient()
