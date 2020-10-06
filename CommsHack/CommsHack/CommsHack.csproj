@@ -95,7 +95,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioAPI.cs" />
     <Compile Include="BasicFileStreamingCapture.cs" />
+    <Compile Include="FloatArrayCapture.cs" />
     <Compile Include="HackConfig.cs" />
     <Compile Include="HackMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

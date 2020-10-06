@@ -15,7 +15,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using System.Linq;
 using Dissonance.Networking.Client;
 using HarmonyLib;
 
@@ -35,21 +34,32 @@ namespace CommsHack
         public override void OnDisabled()
         {
             base.OnDisabled();
-            Exiled.Events.Handlers.Player.Joined -= Events_PlayerJoinEvent;
+            Exiled.Events.Handlers.Player.Joined -= Events_PlayerJoinEvent2;
             Timing.KillCoroutines(handle);
             inst.UnpatchAll();
             inst = null;
             main = null;
+            AudioAPI.API = null;
         }
 
         public override void OnEnabled()
         {
             base.OnEnabled();
-            Exiled.Events.Handlers.Player.Joined += Events_PlayerJoinEvent;
+            Exiled.Events.Handlers.Player.Joined += Events_PlayerJoinEvent2;
             handle = Timing.RunCoroutine(UpdateClient());
             main = this;
             inst = new Harmony("virtualbrightplayz.commhack.scpsl");
             inst.PatchAll();
+            AudioAPI.API = new AudioAPI();
+        }
+
+        public void Events_PlayerJoinEvent2(JoinedEventArgs ev)
+        {
+            string str = Config.CommsFile;
+            if (str.ToLower().EndsWith(".raw"))
+                AudioAPI.API.PlayFileRaw(str);
+            else
+                AudioAPI.API.PlayFile(str);
         }
 
         public IEnumerator<float> UpdateClient()
@@ -68,20 +78,16 @@ namespace CommsHack
         {
             cooms = GameObject.FindObjectOfType<MirrorIgnoranceCommsNetwork>();
             var comms = GameObject.FindObjectOfType<DissonanceComms>();
-            //GameObject go = GameObject.Instantiate(NetworkManager.singleton.playerPrefab);
             file = File.OpenRead(Config.CommsFile);
             byte[] bytes = new byte[512];
             file.Read(bytes, 0, bytes.Length);
-            /*var bfsc = new BasicFileStreamingCapture();
-            bfsc.StartCapture(Config.CommsFile);
-            comms._capture.Start(cooms, bfsc);*/
             client = null;
             if (client == null && cooms.Client == null)
             {
                 cooms.StartClient(Unit.None);
             }
             {
-                client = cooms.Client;//.CreateClient(Unit.None);
+                client = cooms.Client;
                 if (comms.TryGetComponent<IMicrophoneCapture>(out var mic))
                 {
                     if (mic.IsRecording)
@@ -100,34 +106,7 @@ namespace CommsHack
                 comms.RoomChannels.Open("Intercom", false, ChannelPriority.High, 1f);
                 cooms.Server._clients.SendFakeClientState(new MirrorConn(ev.Player.Connection), clientInfo);
                 comms.IsMuted = false;
-                //new RoomChannel?(comms.RoomChannels.Open("Ghost"));
-                //new RoomChannel?(comms.RoomChannels.Open("SCP"));
-                //new RoomChannel?(comms.RoomChannels.Open("Null"));
-                //new RoomChannel?(comms.RoomChannels.Open("Role"));
-
-
-                //PacketWriter packetWriter = new PacketWriter(new byte[1024]);
-                //packetWriter.WriteClientState(cooms.Server._sessionId, clientInfo.PlayerName, clientInfo.PlayerId, clientInfo.CodecSettings, clientInfo.Rooms);
-                //cooms.Server.Send(packetWriter.Written, new MirrorConn(ev.Player.Connection), 0);
             }
-            //client.SendVoiceData(new ArraySegment<byte>(bytes));
-            //cooms.Server._network.SendVoice();
-
-            /*List<OpenChannel> list = new List<OpenChannel>();
-            list.Add(new OpenChannel(ChannelType.Room, 0, new ChannelProperties(comms), false, "Ghost".ToRoomId(), "Ghost"));
-            list.Add(new OpenChannel(ChannelType.Room, 0, new ChannelProperties(comms), false, "SCP".ToRoomId(), "SCP"));
-            list.Add(new OpenChannel(ChannelType.Room, 0, new ChannelProperties(comms), false, "Null".ToRoomId(), "Null"));
-            foreach (var item in cooms.RoomChannels)
-            {
-            }
-            //PacketWriter packet = new PacketWriter();
-            client.SendVoiceData(new ArraySegment<byte>(bytes));
-            PacketWriter packetV = new PacketWriter(new byte[1024]);
-            packetV.WriteVoiceData(cooms.Server.SessionId, 9999, 0, 0, list, new ArraySegment<byte>(bytes));
-            //PacketReader p = new PacketReader(packetV.Written);
-            //ev.Player.Connection.Send(new DissonanceNetworkMessage(packetV.Written), 1);
-            cooms.Server.Send(packetV.Written, new MirrorConn(ev.Player.Connection), 1);*/
-            //cooms.Server._relay.ProcessPacketRelay(ref p, false);
         }
     }
 }

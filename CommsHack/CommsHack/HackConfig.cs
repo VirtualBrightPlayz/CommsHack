@@ -6,5 +6,6 @@ namespace CommsHack
     {
         public bool IsEnabled { get; set; } = true;
         public string CommsFile { get; set; } = "D:/SteamLibrary/steamapps/common/SCP Secret Laboratory Dedicated Server/file.raw";
+        public string FFMPEG { get; set; } = "ffmpeg";
     }
 }
