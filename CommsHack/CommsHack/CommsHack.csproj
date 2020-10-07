@@ -70,8 +70,8 @@
     <Reference Include="Exiled.Updater, Version=3.0.2.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\EXILED.2.1.6\lib\net472\Exiled.Updater.dll</HintPath>
     </Reference>
-    <Reference Include="Mirror">
-      <HintPath>..\..\..\exiled10libs\Mirror.dll</HintPath>
+    <Reference Include="Mirror_publicized">
+      <HintPath>..\..\..\..\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\publicized_assemblies\Mirror_publicized.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -83,6 +83,10 @@
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\exiled10libs\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\..\exiled10libs\UnityEngine.CoreModule.dll</HintPath>
@@ -98,6 +102,7 @@
     <Compile Include="AudioAPI.cs" />
     <Compile Include="BasicFileStreamingCapture.cs" />
     <Compile Include="FloatArrayCapture.cs" />
+    <Compile Include="FuckGhostMode.cs" />
     <Compile Include="HackConfig.cs" />
     <Compile Include="HackMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

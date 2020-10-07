@@ -1,12 +1,15 @@
 ﻿//extern alias NAudio;
 
+using Assets._Scripts.Dissonance;
 using Dissonance;
 using Dissonance.Audio.Capture;
+using Dissonance.Audio.Playback;
 using Dissonance.Integrations.MirrorIgnorance;
 using Dissonance.Networking;
 using Exiled.API.Features;
 using MEC;
 using Mirror;
+using RemoteAdmin;
 //using NAudio::NAudio.Wave;
 using System;
 using System.Collections.Generic;
@@ -80,10 +83,10 @@ namespace CommsHack
 
         public void PlayStream(Stream stream)
         {
-            PlayWithParams(stream, 9999, 0.5f, false);
+            PlayWithParams(stream, 9999, 0.5f, false, Vector3.zero);
         }
 
-        public void PlayWithParams(Stream stream, ushort playerid, float volume, bool _3d)
+        public void PlayWithParams(Stream stream, ushort playerid, float volume, bool _3d, Vector3 position)
         {
             var mirrorComms = GameObject.FindObjectOfType<MirrorIgnoranceCommsNetwork>();
             var comms = GameObject.FindObjectOfType<DissonanceComms>();
@@ -105,19 +108,95 @@ namespace CommsHack
             comms._capture.RestartTransmissionPipeline("Dummy");
             HackMain.clientInfo = mirrorComms.Server._clients.GetOrCreateClientInfo(playerid, "Dummy", new CodecSettings(Dissonance.Audio.Codecs.Codec.Opus, 48000, 960), new MirrorConn(NetworkServer.localConnection));
             var clientInfo = HackMain.clientInfo;
-            //cooms.Server._clients.JoinRoom("Ghost", clientInfo);
-            //cooms.Server._clients.JoinRoom("SCP", clientInfo);
-            mirrorComms.Server._clients.JoinRoom("Null", clientInfo);
-            mirrorComms.Server._clients.JoinRoom("Intercom", clientInfo);
-            //comms.RoomChannels.Open("Ghost", false, ChannelPriority.High, 1f);
-            //comms.RoomChannels.Open("SCP", false, ChannelPriority.High, 1f);
-            comms.RoomChannels.Open("Null", false, ChannelPriority.High, volume);
-            comms.RoomChannels.Open("Intercom", false, ChannelPriority.High, volume);
+            comms.IsMuted = false;
+            if (_3d)
+            {
+                //mirrorComms.Server._clients.JoinRoom("Null", clientInfo);
+                //comms.RoomChannels.Open("Null", true, ChannelPriority.High, 1f);
+                GameObject go = GameObject.Instantiate(NetworkManager.singleton.playerPrefab);
+                go.transform.position = position;
+                go.GetComponent<CharacterClassManager>().CurClass = RoleType.Tutorial;
+                go.GetComponent<CharacterClassManager>().GodMode = true;
+                //go.GetComponent<CharacterClassManager>().RefreshPlyModel();
+                go.GetComponent<NicknameSync>().Network_myNickSync = clientInfo.PlayerName;
+                go.GetComponent<QueryProcessor>().PlayerId = playerid;
+                go.GetComponent<QueryProcessor>().NetworkPlayerId = playerid;
+                //GameObject.Destroy(go.GetComponent<CustomBroadcastTrigger>());
+                go.GetComponent<CustomBroadcastTrigger>().enabled = true;
+                go.GetComponent<CustomBroadcastTrigger>().BroadcastPosition = true;
+                go.GetComponent<CustomBroadcastTrigger>().PlayerId = playerid.ToString();
+                go.GetComponent<CustomBroadcastTrigger>().ChannelType = CommTriggerTarget.Room;
+                //go.GetComponent<CustomBroadcastTrigger>().Priority = ChannelPriority.High;
+                go.GetComponent<CustomBroadcastTrigger>().RoomName = "Proximity";
+                //go.GetComponent<CustomBroadcastTrigger>().OpenChannel();
+                go.GetComponent<Radio>().isVoiceChatting = true;
+                go.GetComponent<Radio>().NetworkisVoiceChatting = true;
+                go.GetComponent<MirrorIgnorancePlayer>()._playerId = clientInfo.PlayerName;
+                go.GetComponent<MirrorIgnorancePlayer>().Network_playerId = clientInfo.PlayerName;
+                go.GetComponent<DisableUselessComponents>()._added = true;
+                go.GetComponent<CharacterClassManager>().IsVerified = true;
+                go.GetComponent<CharacterClassManager>().NetworkIsVerified = true;
+                NetworkServer.Spawn(go);
+                mirrorComms.Server._clients.JoinRoom("Proximity", clientInfo);
+                comms.RoomChannels.Open("Proximity", true, ChannelPriority.High, 1f);
+                //PlayerManager.RemovePlayer(go);
+                Timing.RunCoroutine(SpawnLate(go, clientInfo, playerid));
+                //GameObject.Destroy(go.GetComponent<CustomBroadcastTrigger>());
+                //go.GetComponent<DissonanceUserSetup>().enabled = false;
+            }
+            else
+            {
+                mirrorComms.Server._clients.JoinRoom("Null", clientInfo);
+                mirrorComms.Server._clients.JoinRoom("Intercom", clientInfo);
+                comms.RoomChannels.Open("Null", false, ChannelPriority.High, volume);
+                comms.RoomChannels.Open("Intercom", false, ChannelPriority.High, volume);
+            }
+            mirrorComms.Server._clients.OnAddedClient(clientInfo);
+            comms._players.Add(new LocalVoicePlayerState(playerid.ToString(), comms._capture, comms.Rooms, comms.RoomChannels, comms.PlayerChannels, comms._capture, comms.GetComponent<ICommsNetwork>()));
             foreach (var plr in Player.List)
             {
-                mirrorComms.Server._clients.SendFakeClientState(new MirrorConn(plr.Connection), clientInfo);
+                mirrorComms.Server._clients.SendFakeClientState(new MirrorConn(plr.ReferenceHub.characterClassManager.connectionToClient), clientInfo);
             }
-            comms.IsMuted = false;
+        }
+
+        internal IEnumerator<float> SpawnLate(GameObject go, ClientInfo<MirrorConn> clientInfo, ushort playerid)
+        {
+            /*go.GetComponent<MirrorIgnorancePlayer>().SetPlayerName(clientInfo.PlayerName);
+            go.GetComponent<MirrorIgnorancePlayer>().CmdSetPlayerName(clientInfo.PlayerName);*/
+            yield return Timing.WaitForOneFrame;
+            go.GetComponent<QueryProcessor>().PlayerId = playerid;
+            go.GetComponent<QueryProcessor>().NetworkPlayerId = playerid;
+            //go.GetComponent<DissonanceUserSetup>().currentProfile = go.GetComponent<DissonanceUserSetup>().voice[Team.TUT];
+            go.GetComponent<DissonanceUserSetup>().SetSpeakingFlags((SpeakingFlags)0);
+            go.GetComponent<CustomBroadcastTrigger>().RoomName = "Proximity";
+            //go.GetComponent<MirrorIgnorancePlayer>().CmdSetPlayerName(clientInfo.PlayerName);
+            go.GetComponent<MirrorIgnorancePlayer>().RpcSetPlayerName(clientInfo.PlayerName);
+            yield return Timing.WaitForOneFrame;
+            Exiled.API.Features.Log.Info(go.GetComponent<Radio>().state == null);
+            try
+            {
+                ((IVoicePlaybackInternal)go.GetComponent<Radio>().unityPlayback).StartPlayback();
+            }
+            catch (System.Exception e)
+            {
+                Exiled.API.Features.Log.Error(e);
+            }
+            var ccm = go.GetComponent<CharacterClassManager>();
+            yield return Timing.WaitForOneFrame;
+            //go.GetComponent<PlayerMovementSync>().OverridePosition(go.transform.position, 0f);
+            /*var posdata = new PlayerPositionData(go.GetComponent<ReferenceHub>());
+            NetworkServer.SendToAll(new PlayerPositionManager.PositionMessage(new PlayerPositionData[] { posdata }, 1, 0));*/
+            Exiled.API.Features.Log.Info(go.GetComponent<CustomBroadcastTrigger>().IsTransmitting);
+            Exiled.API.Features.Log.Info(go.GetComponent<CustomBroadcastTrigger>().ChannelType);
+            Exiled.API.Features.Log.Info(go.GetComponent<CustomBroadcastTrigger>().RoomName);
+            Exiled.API.Features.Log.Info(go.GetComponent<CustomBroadcastTrigger>().ShouldActivate(go.GetComponent<CustomBroadcastTrigger>().IsUserActivated()));
+            //Exiled.API.Features.Log.Info(Radio.comms.FindPlayer(clientInfo.PlayerName) == null);
+            //Exiled.API.Features.Log.Info(Radio.comms.FindPlayer(clientInfo.PlayerName).Playback == null);
+            // fuck the exiled ghostmode patch
+            //PlayerManager.RemovePlayer(go);
+            yield return Timing.WaitForOneFrame;
+            Exiled.API.Features.Log.Info(go.GetComponent<CustomBroadcastTrigger>().RoomName);
+            Exiled.API.Features.Log.Info(go.GetComponent<Radio>().unityPlayback.IsSpeaking);
         }
     }
 }

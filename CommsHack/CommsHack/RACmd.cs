@@ -10,6 +10,7 @@ using Mirror;
 using RemoteAdmin;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,12 +30,20 @@ namespace CommsHack
 
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
+            var arr = arguments.Array.ToList();
+            arr.RemoveAt(0);
+            string str = string.Join(" ", arr);
+            if (sender is PlayerCommandSender)
+            {
+                var plr = sender as PlayerCommandSender;
+                FileStream reader = File.OpenRead(str);
+                AudioAPI.API.PlayWithParams(reader, 9998, 1f, true, plr.CCM.transform.position);
+                response = "Playing3D";
+                return true;
+            }
             /*Timing.KillCoroutines(HackMain.handle);
             HackMain.handle = Timing.RunCoroutine(HackMain.main.UpdateClient());*/
             {
-                var arr = arguments.Array.ToList();
-                arr.RemoveAt(0);
-                string str = string.Join(" ", arr);
                 if (str.ToLower().EndsWith(".raw"))
                     AudioAPI.API.PlayFileRaw(str);
                 else

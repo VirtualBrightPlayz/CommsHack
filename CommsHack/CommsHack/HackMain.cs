@@ -44,6 +44,7 @@ namespace CommsHack
 
         public override void OnEnabled()
         {
+            //Exiled.Events.Events.DisabledPatches.Add(typeof(PlayerPositionManager).GetMethod(nameof(PlayerPositionManager.TransmitData)));
             base.OnEnabled();
             Exiled.Events.Handlers.Player.Joined += Events_PlayerJoinEvent2;
             handle = Timing.RunCoroutine(UpdateClient());
