@@ -28,7 +28,11 @@ namespace CommsHack
         {
             if (_file == null || !_file.CanRead)
             {
-                _file = null;
+                Exiled.API.Features.Log.Error("_file==null: " + (_file == null));
+                if (_file != null)
+                {
+                    Exiled.API.Features.Log.Error("_file.CanRead==" + (_file.CanRead));
+                }
                 IsRecording = false;
                 Latency = TimeSpan.FromMilliseconds(0);
                 return _format;
@@ -43,9 +47,12 @@ namespace CommsHack
         public void StopCapture()
         {
             IsRecording = false;
-
+            Log.Info("[FloatArrayCapture] Disabled");
             if (_file != null)
+            {
                 _file.Dispose();
+                _file.Close();
+            }
             _file = null;
         }
 
@@ -61,9 +68,14 @@ namespace CommsHack
 
         public bool UpdateSubscribers()
         {
+            if (_file == null)
+            {
+                return true;
+            }
+
             _elapsedTime += Time.unscaledDeltaTime;
 
-            while (_elapsedTime > 0.02f && _file != null)
+            while (_elapsedTime > 0.02f)
             {
                 _elapsedTime -= 0.02f;
 
