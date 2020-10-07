@@ -1,5 +1,7 @@
 # CommsHack ASS
 
+CommsHack Audio Sub-System
+
 ## !!!WARNING!!!
 
 There isn't any maximum to the volume of the audio played. Loud audio can/will/does break the SCP:SL VSR (https://scpslgame.com/Verified_server_rules.pdf). Please be careful.
