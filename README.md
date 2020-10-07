@@ -16,6 +16,12 @@ There is also no security measures as to what can be played. Don't give Remote A
 
 There isn't a builtin converter for the plugin. Audio comes in different formats and as such can be a pain to decode. So we added ffmpeg support. Downloads for the binaries can be found at: https://ffmpeg.org/download.html
 
+## Permissions
+
+### `ass.playra`
+
+Let people with RA play sounds.
+
 ## Configs
 
 ### `f_f_m_p_e_g`
