@@ -58,9 +58,9 @@ namespace CommsHack
         {
             string str = Config.CommsFile;
             if (str.ToLower().EndsWith(".raw"))
-                AudioAPI.API.PlayFileRaw(str);
+                AudioAPI.API.PlayFileRaw(str, 0.5f);
             else
-                AudioAPI.API.PlayFile(str);
+                AudioAPI.API.PlayFile(str, 0.5f);
         }
 
         public IEnumerator<float> UpdateClient()

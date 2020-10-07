@@ -32,6 +32,7 @@ namespace CommsHack
         {
             var arr = arguments.Array.ToList();
             arr.RemoveAt(0);
+            arr.RemoveAt(0);
             string str = string.Join(" ", arr);
             /*if (sender is PlayerCommandSender)
             {
@@ -45,9 +46,9 @@ namespace CommsHack
             HackMain.handle = Timing.RunCoroutine(HackMain.main.UpdateClient());*/
             {
                 if (str.ToLower().EndsWith(".raw"))
-                    AudioAPI.API.PlayFileRaw(str);
+                    AudioAPI.API.PlayFileRaw(str, float.Parse(arguments.Array[1]));
                 else
-                    AudioAPI.API.PlayFile(str);
+                    AudioAPI.API.PlayFile(str, float.Parse(arguments.Array[1]));
                 response = "Playing";
                 /*if (sender is PlayerCommandSender)
                 {

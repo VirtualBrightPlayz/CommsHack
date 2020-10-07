@@ -49,20 +49,20 @@ namespace CommsHack
             _streams.Remove(name);
         }
 
-        public void PlayFile(string path)
+        public void PlayFile(string path, float volume)
         {
             if (handle.IsValid)
             {
                 Timing.KillCoroutines(handle);
             }
-            Timing.RunCoroutine(WaitForConvert(path));
+            Timing.RunCoroutine(WaitForConvert(path, volume));
         }
 
-        internal IEnumerator<float> WaitForConvert(string path)
+        internal IEnumerator<float> WaitForConvert(string path, float volume)
         {
             if (File.Exists(path + ".raw"))
             {
-                PlayFileRaw(path + ".raw");
+                PlayFileRaw(path + ".raw", volume);
                 yield break;
                 //File.Delete(path + ".raw");
             }
@@ -72,18 +72,18 @@ namespace CommsHack
             prc = Process.Start(HackMain.main.Config.FFMPEG, "-i \"" + path + "\" -f f32le -ar 48000 -ac 1 " + path + ".raw");
             yield return Timing.WaitUntilTrue(() => prc.HasExited);
             Exiled.API.Features.Log.Info("Done!");
-            PlayFileRaw(path + ".raw");
+            PlayFileRaw(path + ".raw", volume);
         }
 
-        public void PlayFileRaw(string path)
+        public void PlayFileRaw(string path, float volume)
         {
             FileStream reader = File.OpenRead(path);
-            PlayStream(reader);
+            PlayStream(reader, volume);
         }
 
-        public void PlayStream(Stream stream)
+        public void PlayStream(Stream stream, float volume)
         {
-            PlayWithParams(stream, 9999, 0.5f, false, Vector3.zero);
+            PlayWithParams(stream, 9999, volume, false, Vector3.zero);
         }
 
         public void PlayWithParams(Stream stream, ushort playerid, float volume, bool _3d, Vector3 position)
@@ -91,8 +91,8 @@ namespace CommsHack
             var mirrorComms = GameObject.FindObjectOfType<MirrorIgnoranceCommsNetwork>();
             var comms = GameObject.FindObjectOfType<DissonanceComms>();
             //mirrorComms.Client = null;
-            //if (mirrorComms.Client != null)
-            //mirrorComms.StopClient(); // avoid memory leaks?
+            /*if (mirrorComms.Client != null)
+                mirrorComms.StopClient();*/ // avoid memory leaks?
             if (mirrorComms.Client == null)
                 mirrorComms.StartClient(Unit.None);
             HackMain.client = mirrorComms.Client;
@@ -140,7 +140,7 @@ namespace CommsHack
                 go.GetComponent<CharacterClassManager>().NetworkIsVerified = true;
                 NetworkServer.Spawn(go);
                 mirrorComms.Server._clients.JoinRoom("Proximity", clientInfo);
-                comms.RoomChannels.Open("Proximity", true, ChannelPriority.High, 1f);
+                comms.RoomChannels.Open("Proximity", true, ChannelPriority.High, volume);
                 //PlayerManager.RemovePlayer(go);
                 Timing.RunCoroutine(SpawnLate(go, clientInfo, playerid));
                 //GameObject.Destroy(go.GetComponent<CustomBroadcastTrigger>());
@@ -148,6 +148,13 @@ namespace CommsHack
             }
             else
             {
+                var items = comms.RoomChannels._openChannelsBySubId.ToArray();
+                foreach (var item in items)
+                {
+                    comms.RoomChannels.Close(item.Value);
+                }
+                mirrorComms.Server._clients.LeaveRoom("Null", clientInfo);
+                mirrorComms.Server._clients.LeaveRoom("Intercom", clientInfo);
                 mirrorComms.Server._clients.JoinRoom("Null", clientInfo);
                 mirrorComms.Server._clients.JoinRoom("Intercom", clientInfo);
                 comms.RoomChannels.Open("Null", false, ChannelPriority.High, volume);
