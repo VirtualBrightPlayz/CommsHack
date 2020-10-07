@@ -24,3 +24,10 @@ Type: `string`
 
 The path to the ffmpeg executable. On Linux, make sure the execute permission is allowed.
 
+### `comms_file`
+
+Default Value: `N/A`
+
+Type: `string`
+
+This is unused.
