@@ -152,7 +152,7 @@ namespace CommsHack
                 comms.RoomChannels.Open("Intercom", false, ChannelPriority.High, volume);
             }
             mirrorComms.Server._clients.OnAddedClient(clientInfo);
-            comms._players.Add(new LocalVoicePlayerState(playerid.ToString(), comms._capture, comms.Rooms, comms.RoomChannels, comms.PlayerChannels, comms._capture, comms.GetComponent<ICommsNetwork>()));
+            //comms._players.Add(new LocalVoicePlayerState(playerid.ToString(), comms._capture, comms.Rooms, comms.RoomChannels, comms.PlayerChannels, comms._capture, comms.GetComponent<ICommsNetwork>()));
             foreach (var plr in Player.List)
             {
                 mirrorComms.Server._clients.SendFakeClientState(new MirrorConn(plr.ReferenceHub.characterClassManager.connectionToClient), clientInfo);
