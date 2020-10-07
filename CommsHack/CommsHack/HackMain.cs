@@ -34,19 +34,19 @@ namespace CommsHack
         public override void OnDisabled()
         {
             base.OnDisabled();
-            Exiled.Events.Handlers.Player.Joined -= Events_PlayerJoinEvent2;
-            Timing.KillCoroutines(handle);
+            //Exiled.Events.Handlers.Player.Joined -= Events_PlayerJoinEvent2;
             inst.UnpatchAll();
             inst = null;
             main = null;
             AudioAPI.API = null;
+            Timing.KillCoroutines(handle);
         }
 
         public override void OnEnabled()
         {
             //Exiled.Events.Events.DisabledPatches.Add(typeof(PlayerPositionManager).GetMethod(nameof(PlayerPositionManager.TransmitData)));
             base.OnEnabled();
-            Exiled.Events.Handlers.Player.Joined += Events_PlayerJoinEvent2;
+            //Exiled.Events.Handlers.Player.Joined += Events_PlayerJoinEvent2;
             handle = Timing.RunCoroutine(UpdateClient());
             main = this;
             inst = new Harmony("virtualbrightplayz.commhack.scpsl");
@@ -68,9 +68,16 @@ namespace CommsHack
             while (true)
             {
                 yield return Timing.WaitForOneFrame;
-                if (client != null)
+                if (client != null && !client._disconnected)
                 {
-                     client.Update();
+                    for (int i = 0; i < DebugSettings.Instance._levels.Count; i++)
+                    {
+                        DebugSettings.Instance._levels[i] = LogLevel.Trace;
+                    }
+                    if (client.Update() == ClientStatus.Error)
+                    {
+                        Exiled.API.Features.Log.Error("Client error!!!");
+                    }
                 }
             }
         }
