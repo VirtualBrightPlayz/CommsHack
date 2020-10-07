@@ -102,8 +102,9 @@ namespace CommsHack
                 UnityEngine.Object.Destroy((Component)mic);
             }
             mirrorComms.Mode = NetworkMode.Host;
-            comms.gameObject.AddComponent<FloatArrayCapture>()._file = stream;
-            comms._capture.Start(mirrorComms, comms.GetComponent<FloatArrayCapture>());
+            var capt = comms.gameObject.AddComponent<FloatArrayCapture>();
+            capt._file = stream;
+            comms._capture.Start(mirrorComms, capt);
             comms._capture._micName = "StreamedMic";
             comms._capture.RestartTransmissionPipeline("Dummy");
             HackMain.clientInfo = mirrorComms.Server._clients.GetOrCreateClientInfo(playerid, "Dummy", new CodecSettings(Dissonance.Audio.Codecs.Codec.Opus, 48000, 960), new MirrorConn(NetworkServer.localConnection));
