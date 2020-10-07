@@ -5,6 +5,7 @@ using Dissonance.Audio.Capture;
 using Dissonance.Integrations.MirrorIgnorance;
 using Dissonance.Networking;
 using Exiled.API.Features;
+using Exiled.Permissions.Extensions;
 using MEC;
 using Mirror;
 using RemoteAdmin;
@@ -44,6 +45,11 @@ namespace CommsHack
             }*/
             /*Timing.KillCoroutines(HackMain.handle);
             HackMain.handle = Timing.RunCoroutine(HackMain.main.UpdateClient());*/
+            if (sender is PlayerCommandSender && !((PlayerCommandSender)sender).CheckPermission("ass.playra"))
+            {
+                response = "Nope";
+                return true;
+            }
             {
                 if (str.ToLower().EndsWith(".raw"))
                     AudioAPI.API.PlayFileRaw(str, float.Parse(arguments.Array[1]));
