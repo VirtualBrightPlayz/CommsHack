@@ -90,10 +90,11 @@ namespace CommsHack
         {
             var mirrorComms = GameObject.FindObjectOfType<MirrorIgnoranceCommsNetwork>();
             var comms = GameObject.FindObjectOfType<DissonanceComms>();
-            mirrorComms.Client = null;
+            //mirrorComms.Client = null;
             //if (mirrorComms.Client != null)
             //mirrorComms.StopClient(); // avoid memory leaks?
-            mirrorComms.StartClient(Unit.None);
+            if (mirrorComms.Client == null)
+                mirrorComms.StartClient(Unit.None);
             HackMain.client = mirrorComms.Client;
             if (comms.TryGetComponent<IMicrophoneCapture>(out var mic))
             {
@@ -152,12 +153,12 @@ namespace CommsHack
                 comms.RoomChannels.Open("Null", false, ChannelPriority.High, volume);
                 comms.RoomChannels.Open("Intercom", false, ChannelPriority.High, volume);
             }
-            mirrorComms.Server._clients.OnAddedClient(clientInfo);
+            //mirrorComms.Server._clients.OnAddedClient(clientInfo);
             //comms._players.Add(new LocalVoicePlayerState(playerid.ToString(), comms._capture, comms.Rooms, comms.RoomChannels, comms.PlayerChannels, comms._capture, comms.GetComponent<ICommsNetwork>()));
-            foreach (var plr in Player.List)
+            /*foreach (var plr in Player.List)
             {
                 mirrorComms.Server._clients.SendFakeClientState(new MirrorConn(plr.ReferenceHub.characterClassManager.connectionToClient), clientInfo);
-            }
+            }*/
         }
 
         internal IEnumerator<float> SpawnLate(GameObject go, ClientInfo<MirrorConn> clientInfo, ushort playerid)
