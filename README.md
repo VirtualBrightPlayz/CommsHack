@@ -16,7 +16,7 @@ There is also no security measures as to what can be played. Don't give Remote A
 
 There isn't a builtin converter for the plugin. Audio comes in different formats and as such can be a pain to decode. So we added ffmpeg support. Downloads for the binaries can be found at: https://ffmpeg.org/download.html
 
-If you would like to use this without ffmpeg, read up on how to convert the files beforehand https://dissonance.readthedocs.io/en/latest/Tutorials/Custom-Microphone-Capture/index.html
+If you would like to use this without ffmpeg, read up on how to convert the files beforehand https://dissonance.readthedocs.io/en/latest/Tutorials/Custom-Microphone-Capture/index.html (Step 4)
 
 ## Permissions
 
