@@ -140,7 +140,7 @@ namespace CommsHack
                 go.GetComponent<CharacterClassManager>().NetworkIsVerified = true;
                 NetworkServer.Spawn(go);
                 mirrorComms.Server._clients.JoinRoom("Proximity", clientInfo);
-                comms.RoomChannels.Open("Proximity", true, ChannelPriority.High, volume);
+                comms.RoomChannels.Open("Proximity", true, ChannelPriority.None, volume);
                 //PlayerManager.RemovePlayer(go);
                 Timing.RunCoroutine(SpawnLate(go, clientInfo, playerid));
                 //GameObject.Destroy(go.GetComponent<CustomBroadcastTrigger>());
@@ -157,8 +157,8 @@ namespace CommsHack
                 mirrorComms.Server._clients.LeaveRoom("Intercom", clientInfo);
                 mirrorComms.Server._clients.JoinRoom("Null", clientInfo);
                 mirrorComms.Server._clients.JoinRoom("Intercom", clientInfo);
-                comms.RoomChannels.Open("Null", false, ChannelPriority.High, volume);
-                comms.RoomChannels.Open("Intercom", false, ChannelPriority.High, volume);
+                comms.RoomChannels.Open("Null", false, ChannelPriority.None, volume);
+                comms.RoomChannels.Open("Intercom", false, ChannelPriority.None, volume);
             }
             //mirrorComms.Server._clients.OnAddedClient(clientInfo);
             //comms._players.Add(new LocalVoicePlayerState(playerid.ToString(), comms._capture, comms.Rooms, comms.RoomChannels, comms.PlayerChannels, comms._capture, comms.GetComponent<ICommsNetwork>()));
