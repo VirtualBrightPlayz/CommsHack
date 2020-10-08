@@ -12,6 +12,8 @@ There is also no security measures as to what can be played. Don't give Remote A
 
 `audio <volume between 0-1> <file path>`
 
+Please note that spaces and other special chars. don't work in file names.
+
 ## FFmpeg
 
 There isn't a builtin converter for the plugin. Audio comes in different formats and as such can be a pain to decode. So we added ffmpeg support. Downloads for the binaries can be found at: https://ffmpeg.org/download.html
